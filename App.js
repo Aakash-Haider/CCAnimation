@@ -73,10 +73,11 @@ const App = () => {
   const [calculatorActive, setCalculatorActive] = React.useState(false);
 
   const fadeAnim = React.useRef(new Animated.Value(1)).current
-  const translateY = React.useRef(new Animated.Value(0)).current;
 
 
   const GastureView = (props) => {
+    const translateY = React.useRef(new Animated.Value(100)).current;
+
     const onPanGestureEvent =
       Animated.event(
         [
@@ -96,7 +97,6 @@ const App = () => {
           style={styles.flashView}
           colorA={'rgba(0,0,0,0.6)'}
           colorB={'rgba(0,0,0,0.6)'}
-          extrastyle={{}}
         >
 
 
