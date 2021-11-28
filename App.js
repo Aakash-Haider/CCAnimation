@@ -76,7 +76,7 @@ const App = () => {
   const translateY = React.useRef(new Animated.Value(0)).current;
 
 
-  const FlashView = () => {
+  const GastureView = (props) => {
     const onPanGestureEvent =
       Animated.event(
         [
@@ -91,7 +91,7 @@ const App = () => {
 
     return (
       <View style={styles.flashViewContainer}>
-        <MaterialCommunityIcons name={'flashlight'} color={'#fff'} size={40} />
+        {props.icon}
         <BlurGradient
           style={styles.flashView}
           colorA={'rgba(0,0,0,0.6)'}
@@ -100,7 +100,7 @@ const App = () => {
         >
 
 
-          <PanGestureHandler failOffsetY={[0, 100]} onGestureEvent={(e) => { console.log('112321321', e.nativeEvent.translationY); onPanGestureEvent(e) }}>
+          <PanGestureHandler onGestureEvent={(e) => { console.log('112321321', e.nativeEvent.translationY); onPanGestureEvent(e) }}>
             <Animated.View
               style={[
                 styles.square,
@@ -126,6 +126,11 @@ const App = () => {
 
     if (torchActive) {
       setTorchActive(false);
+    } else if (brightnessActive) {
+      setBrightnessActive(false)
+    }
+    else if (volumeActive) {
+      setVolumeActive(false)
     }
     else {
       return
@@ -150,10 +155,17 @@ const App = () => {
 
 
 
-  const _onPressTorch = (prevHeight, newHeight, prevWidth, newWidth) => {
-    setTorchActive(!torchActive);
-
+  const _onPressLargeMenu = (menu) => {
     LayoutAnimation.linear();
+
+    if (menu == 'torch') {
+      setTorchActive(!torchActive);
+    } else if (menu == 'brightness') {
+      setBrightnessActive(!brightnessActive)
+    }
+    else if (menu == 'volume') {
+      setVolumeActive(!volumeActive)
+    }
 
   }
 
@@ -200,9 +212,20 @@ const App = () => {
           onPress={_onPressOutside}
         >
 
-          {torchActive ?
+          {torchActive || brightnessActive || volumeActive ?
 
-            <FlashView setTorchActive={setTorchActive} />
+            <GastureView icon={
+              torchActive ?
+                <MaterialCommunityIcons name={'flashlight'} color={'#fff'} size={40} />
+                :
+                (brightnessActive
+                  ?
+                  <Ionicon name={'ios-sunny-sharp'} color={'#fff'} size={40} />
+                  :
+                  <Ionicon name={'volume-medium-sharp'} color={'#fff'} size={40} />
+
+                )
+            } />
             :
 
             <View style={styles.contolCenterContainer}>
@@ -563,6 +586,7 @@ const App = () => {
                       colorA={'rgba(0,0,0,0.6)'}
                       colorB={'rgba(0,0,0,0.6)'}
                       extrastyle={{ justifyContent: 'flex-end' }}
+                      onPress={() => { _onPressLargeMenu('brightness') }}
                     >
                       <View style={{ backgroundColor: 'rgba(256,256,256,0.6)', height: '60%', width: '100%', alignItems: 'center', alignSelf: 'flex-end' }}>
 
@@ -581,6 +605,7 @@ const App = () => {
                       colorA={'rgba(0,0,0,0.6)'}
                       colorB={'rgba(0,0,0,0.6)'}
                       extrastyle={{ justifyContent: 'flex-end' }}
+                      onPress={() => { _onPressLargeMenu('volume') }}
                     >
                       <View style={{ backgroundColor: 'rgba(256,256,256,0.6)', height: '40%', width: '100%', alignItems: 'center', alignSelf: 'flex-end' }}>
                         <Ionicon name={'volume-medium-sharp'} color={'rgba(61, 45, 45,0.7)'} size={30} style={styles.absoluteIcon} />
@@ -602,7 +627,7 @@ const App = () => {
                     colorA={'rgba(0,0,0,0.6)'}
                     colorB={'rgba(0,0,0,0.6)'}
                     extrastyle={{ justifyContent: 'center' }}
-                    onPress={() => { _onPressTorch() }}
+                    onPress={() => { _onPressLargeMenu('torch') }}
                   >
                     <MaterialCommunityIcons name={'flashlight'} color={'#fff'} size={30} />
                   </BlurGradient>
